@@ -1,0 +1,6 @@
+from typing import *
+
+import numpy as np
+
+def decode_rle(mask: np.ndarray, counts: List[int]): ...
+def decode_polygons(mask: np.ndarray, polygons: List[List[float]]): ...

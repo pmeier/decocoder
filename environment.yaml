@@ -1,0 +1,22 @@
+name: decocoder-dev
+channels:
+  - conda-forge
+dependencies:
+  - python=3.7
+  - rust
+  - maturin
+
+  - doit
+  - ufmt
+  - flake8   # ruff?
+  - mypy
+  - strictyaml
+  - pytest
+  - hypothesis
+  
+  - tqdm
+  - pycocotools
+  - Pillow
+  - opencv
+  - requests
+  - pandas

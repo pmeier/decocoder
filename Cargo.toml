@@ -1,0 +1,20 @@
+[package]
+name = "decocoder-rs"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "_rs"
+path = "src/rust/lib.rs"
+crate-type = ["cdylib"]
+
+[package.metadata.maturin]
+python-source = "src/python"
+name = "decocoder._rs"
+
+[dependencies]
+numpy = "0.17"
+
+[dependencies.pyo3]
+version = "0.17"
+features = ["extension-module", "abi3-py37"]
