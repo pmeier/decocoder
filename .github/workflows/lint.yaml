@@ -1,0 +1,25 @@
+on:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup development environment
+        uses: ./.github/actions/setup-dev-env
+
+      - name: Debug
+        run: conda list
+
+      - name: Check Python code format
+        run: ufmt check src/python
+
+      - name: Check Rust code format
+        run: cargo fmt --check
+
+      - name: Lint Rust code
+        run: cargo clippy
