@@ -6,6 +6,10 @@ inputs:
     description: Name of the conda environment
     required: false
     default: decocoder-dev
+  path:
+    description: Path to the environment file
+    required: false
+    default: environment.yml
 
 runs:
   using: composite
@@ -19,21 +23,19 @@ runs:
         activate-environment: ${{ inputs.name }}
 
     - name: Set cache date
+      id: cache-key
       shell: bash
-      run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+      run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
 
-    - name: Debug
-      shell: bash -el {0}
-      run: |
-        echo $CONDA_PREFIX
-        echo '#############'
-        echo ${{ runner.os }}
+    - name: Restore conda environment
+      id: cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.CONDA }}/envs
+        key: ${{ runner.os }}--${{ runner.arch }}--${{steps.cache-key.outputs.date }}--${{ hashFiles(inputs.path) }}
+        restore-key: ${{ runner.os }}--${{ runner.arch }}
 
-#    - name: Restore conda environment
-#      uses: actions/cache@v2
-#      with:
-#        path: ${{ matrix.prefix }}
-#        key: ${{ matrix.label }}-conda-${{ hashFiles('environment.yml') }}-${{ env.DATE }}-${{ env.CACHE_NUMBER }}
-#      id: cache
-
-
+    - name: Update conda environment
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: mamba env update -n ${{ inputs.name }} -f ${{ inputs.path }}
