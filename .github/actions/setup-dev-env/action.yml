@@ -36,8 +36,8 @@ runs:
       with:
         path: ${{ env.CONDA }}/envs
         key: ${{ runner.os }}--${{ runner.arch }}--${{steps.cache-key.outputs.date }}--${{ hashFiles(inputs.path) }}
-        restore-keys:
-          - ${{ runner.os }}--${{ runner.arch }}
+        restore-keys: |
+          ${{ runner.os }}--${{ runner.arch }}--
 
     - name: Update conda environment
       if: steps.cache.outputs.cache-hit == 'false'
