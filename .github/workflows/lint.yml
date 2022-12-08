@@ -15,9 +15,6 @@ jobs:
       - name: Setup development environment
         uses: ./.github/actions/setup-dev-env
 
-      - name: Debug
-        run: conda list
-
       - name: Check Python code format
         run: ufmt check src/python
 
