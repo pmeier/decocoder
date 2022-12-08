@@ -40,6 +40,6 @@ runs:
           ${{ runner.os }}--${{ runner.arch }}--
 
     - name: Update conda environment
-      if: steps.cache.outputs.cache-hit == 'false'
+      if: steps.cache.outputs.cache-hit != 'true'
       shell: bash
       run: mamba env update -n ${{ inputs.name }} -f ${{ inputs.path }}
