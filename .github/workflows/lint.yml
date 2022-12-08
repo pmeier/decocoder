@@ -1,0 +1,36 @@
+on:
+  pull_request:
+
+jobs:
+  lint:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup development environment
+        uses: ./.github/actions/setup-dev-env
+
+      - name: Debug
+        run: conda list
+#
+#      - name: Check Python code format
+#        run: ufmt check src/python
+#
+#      - name: Check Rust code format
+#        run: cargo fmt --check
+#
+#      - name: Lint Rust code
+#        run: cargo clippy
