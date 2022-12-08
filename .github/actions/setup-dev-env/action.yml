@@ -1,13 +1,39 @@
 name: setup-dev-env
 description: "Setup development environment"
 
+inputs:
+  name:
+    description: Name of the conda environment
+    required: false
+    default: decocoder-dev
+
 runs:
   using: composite
 
   steps:
-    - name: Setup conda environment
+    - name: Setup mambaforge
       uses: conda-incubator/setup-miniconda@v2
       with:
-        auto-update-conda: true
-        environment-file: environment.yaml
-        activate-environment: decocoder-dev
+        miniforge-variant: Mambaforge
+        use-mamba: true
+        activate-environment: ${{ inputs.name }}
+
+    - name: Set cache date
+      shell: bash
+      run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+
+    - name: Debug
+      shell: bash
+      run: |
+        echo $CONDA_PREFIX
+        echo '#############'
+        echo ${{ runner.os }}
+
+#    - name: Restore conda environment
+#      uses: actions/cache@v2
+#      with:
+#        path: ${{ matrix.prefix }}
+#        key: ${{ matrix.label }}-conda-${{ hashFiles('environment.yml') }}-${{ env.DATE }}-${{ env.CACHE_NUMBER }}
+#      id: cache
+
+

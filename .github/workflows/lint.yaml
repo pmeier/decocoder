@@ -3,7 +3,14 @@ on:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout repository
@@ -14,12 +21,12 @@ jobs:
 
       - name: Debug
         run: conda list
-
-      - name: Check Python code format
-        run: ufmt check src/python
-
-      - name: Check Rust code format
-        run: cargo fmt --check
-
-      - name: Lint Rust code
-        run: cargo clippy
+#
+#      - name: Check Python code format
+#        run: ufmt check src/python
+#
+#      - name: Check Rust code format
+#        run: cargo fmt --check
+#
+#      - name: Lint Rust code
+#        run: cargo clippy
