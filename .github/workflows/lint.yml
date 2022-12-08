@@ -1,3 +1,5 @@
+name: lint.yml
+
 on:
   pull_request:
 
