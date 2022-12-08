@@ -36,9 +36,10 @@ runs:
       with:
         path: ${{ env.CONDA }}/envs
         key: ${{ runner.os }}--${{ runner.arch }}--${{steps.cache-key.outputs.date }}--${{ hashFiles(inputs.path) }}
-        restore-key: ${{ runner.os }}--${{ runner.arch }}
+        restore-keys:
+          - ${{ runner.os }}--${{ runner.arch }}
 
     - name: Update conda environment
-      if: steps.cache.outputs.cache-hit != 'true'
+      if: steps.cache.outputs.cache-hit == 'false'
       shell: bash
       run: mamba env update -n ${{ inputs.name }} -f ${{ inputs.path }}
