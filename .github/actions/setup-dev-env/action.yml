@@ -1,0 +1,45 @@
+name: setup-dev-env
+description: "Setup development environment"
+
+inputs:
+  name:
+    description: Name of the conda environment
+    required: false
+    default: decocoder-dev
+  path:
+    description: Path to the environment file
+    required: false
+    default: environment.yml
+
+runs:
+  using: composite
+
+  steps:
+    - name: Setup mambaforge
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        miniforge-variant: Mambaforge
+        use-mamba: true
+        activate-environment: ${{ inputs.name }}
+
+    - name: Set cache date
+      id: cache-key
+      shell: bash
+      run: |
+        DATE=$(date +'%Y%m%d')
+        echo $DATE
+        echo "DATE=$DATE" >> $GITHUB_OUTPUT
+
+    - name: Restore conda environment
+      id: cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.CONDA }}/envs
+        key: ${{ runner.os }}--${{ runner.arch }}--${{steps.cache-key.outputs.date }}--${{ hashFiles(inputs.path) }}
+        restore-keys: |
+          ${{ runner.os }}--${{ runner.arch }}--
+
+    - name: Update conda environment
+      if: steps.cache.outputs.cache-hit == 'false'
+      shell: bash
+      run: mamba env update -n ${{ inputs.name }} -f ${{ inputs.path }}
