@@ -19,7 +19,7 @@ jobs:
         uses: ./.github/actions/setup-dev-env
 
       - name: Check Python code format
-        run: ufmt check src/python
+        run: ufmt check .
 
       - name: Check Rust code format
         run: cargo fmt --check
