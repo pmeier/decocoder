@@ -23,7 +23,7 @@ runs:
       run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
 
     - name: Debug
-      shell: bash
+      shell: bash -el {0}
       run: |
         echo $CONDA_PREFIX
         echo '#############'
