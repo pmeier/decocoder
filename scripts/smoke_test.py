@@ -7,36 +7,46 @@ import tqdm
 
 import decocoder
 
+PROJECT_ROOT = pathlib.Path(__file__).parents[1]
+
 
 def main(args):
-    for path in tqdm.tqdm(args.files):
-        with open(path) as file:
-            data = json.load(file)
+    print(f"Loading annotations from {args.annotations_file}")
+    with open(args.annotations_file) as file:
+        annotations = json.load(file)
 
-        spatial_sizes = {
-            meta["id"]: (meta["height"], meta["width"]) for meta in data["images"]
-        }
+    with tqdm.tqdm(total=len(annotations)) as progress_bar:
+        for file_name, per_file_annotations in annotations.items():
+            progress_bar.desc = file_name
+            progress_bar.display()
 
-        for ann in tqdm.tqdm(data["annotations"]):
-            try:
-                decocoder.segmentation_to_mask(
-                    ann["segmentation"], spatial_sizes[ann["image_id"]]
-                )
-            except BaseException as error:
-                raise AssertionError(
-                    f"The error above was caused by the annotation with ID {ann['id']} "
-                    f"in file {path}."
-                ) from error
+            for annotation_id, (segmentation, spatial_size) in tqdm.tqdm(
+                per_file_annotations.items(), total=len(per_file_annotations)
+            ):
+                try:
+                    decocoder.segmentation_to_mask(segmentation, spatial_size)
+                except BaseException as error:
+                    raise AssertionError(
+                        f"The error above was caused by "
+                        f"the annotation with ID {annotation_id} in file {file_name}."
+                    ) from error
+
+            progress_bar.update()
 
 
 def parse_argv(argv):
     parser = argparse.ArgumentParser()
 
-    parser.add_argument(dest="files", nargs="+", type=pathlib.Path)
+    parser.add_argument(
+        "-f",
+        "--annotations-file",
+        type=pathlib.Path,
+        default=PROJECT_ROOT / "assets" / "annotations_trainval2017.json",
+    )
 
     args = parser.parse_args(argv)
 
-    args.files = [file.resolve() for file in args.files]
+    args.annotations_file = args.annotations_file.resolve()
 
     return args
 
