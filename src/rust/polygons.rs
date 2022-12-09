@@ -154,7 +154,7 @@ fn scanline(mask: &mut PyReadwriteArray2<u8>, edges: Vec<Edge>) {
     }
 
     debug_assert!(prev_processed_edges.len() % 2 == 0);
-    foo(mask, &prev_processed_edges, &y_scan, &spatial_size);
+    foo(mask, &prev_processed_edges, &y_scan.clamp(0, y_max), &spatial_size);
 }
 
 fn drain_filter_into<T, P>(src: &mut Vec<T>, dst: &mut Vec<T>, predicate: P)
