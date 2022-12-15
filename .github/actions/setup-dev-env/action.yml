@@ -35,9 +35,9 @@ runs:
       uses: actions/cache@v2
       with:
         path: ${{ env.CONDA }}/envs
-        key: ${{ runner.os }}--${{ runner.arch }}--${{ inputs.python-version }}--${{ inputs.rust-toolchain }}--${{steps.cache-key.outputs.date }}--${{ hashFiles('environment.yml', 'pyproject.toml', 'Cargo.toml') }}
+        key: ${{ runner.os }}--${{ runner.arch }}--${{ inputs.python-version }}--${{steps.cache-key.outputs.date }}--${{ hashFiles('environment.yml', 'pyproject.toml', 'Cargo.toml') }}
         restore-keys: |
-          ${{ runner.os }}--${{ runner.arch }}--${{ inputs.python-version }}--${{ inputs.rust-toolchain }}
+          ${{ runner.os }}--${{ runner.arch }}--${{ inputs.python-version }}
 
     - name: Update conda environment
       if: steps.cache.outputs.cache-hit != 'true'
@@ -47,6 +47,5 @@ runs:
         mamba env update -n decocoder-dev -f environment.yml
 
     - name: Update Rust toolchain
-      if: steps.cache.outputs.cache-hit != 'true'
       shell: bash
       run: rustup toolchain install ${{ inputs.rust-toolchain }}
