@@ -47,11 +47,6 @@ jobs:
       image: ${{ matrix.image }}
 
     steps:
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-
       - run: python --version
 
   build:
