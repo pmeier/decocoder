@@ -35,7 +35,7 @@ runs:
       uses: actions/cache@v2
       with:
         path: ${{ env.CONDA }}/envs
-        key: ${{ runner.os }}--${{ runner.arch }}--${{ inputs.python-version }}--${{ inputs.rust-toolchain }}--${{steps.cache-key.outputs.date }}--${{ hashFiles(environment.yml, pyproject.toml, Cargo.toml) }}
+        key: ${{ runner.os }}--${{ runner.arch }}--${{ inputs.python-version }}--${{ inputs.rust-toolchain }}--${{steps.cache-key.outputs.date }}--${{ hashFiles('environment.yml', 'pyproject.toml', 'Cargo.toml') }}
         restore-keys: |
           ${{ runner.os }}--${{ runner.arch }}--${{ inputs.python-version }}--${{ inputs.rust-toolchain }}
 
