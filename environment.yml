@@ -17,6 +17,4 @@ dependencies:
   - tqdm
   - pycocotools
   - Pillow
-  - opencv
   - requests
-  - pandas

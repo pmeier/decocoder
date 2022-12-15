@@ -33,7 +33,7 @@ jobs:
         uses: ./.github/actions/setup-dev-env
         with:
           python-version: ${{ matrix.python-version }}
-          rust-toolchain: ${{ matrix.python-version }}
+          rust-toolchain: ${{ matrix.rust-toolchain }}
 
       - name: Build wheel
         run: maturin build --all-features
