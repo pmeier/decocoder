@@ -6,15 +6,8 @@ dependencies:
   - rust
   - maturin
 
-  - doit
   - ufmt
-  - flake8   # ruff?
-  - mypy
-  - strictyaml
-  - pytest
-  - hypothesis
   
   - tqdm
   - pycocotools
-  - Pillow
   - requests
