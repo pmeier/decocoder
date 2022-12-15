@@ -47,5 +47,6 @@ runs:
         mamba env update -n decocoder-dev -f environment.yml
 
     - name: Update Rust toolchain
+      if: matrix.rust-toolchain != 'stable'
       shell: bash
       run: rustup toolchain install ${{ inputs.rust-toolchain }}
