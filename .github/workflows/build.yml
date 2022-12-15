@@ -29,6 +29,31 @@ jobs:
           echo $MATRIX | jq
           echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
 
+      - name: Temp disable
+        run: exit 1
+
+  debug:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            image: quay.io/pypa/manylinux2014_x86_64
+          - os: ubuntu-latest
+            image: quay.io/pypa/manylinux_2_28_x86_64
+          - os: windows-latest
+
+    runs-on: ${{ matrix.os }}
+    container:
+      image: ${{ matrix.image }}
+
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - run: python --version
+
   build:
     needs: matrix
 
@@ -36,6 +61,7 @@ jobs:
       matrix: ${{fromJson(needs.matrix.outputs.matrix)}}
 
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
 
     defaults:
       run:
