@@ -17,11 +17,6 @@ jobs:
           - "3.9"
           - "3.10"
         rust-toolchain: ["stable"]
-        include:
-          - os: ubuntu-latest
-            rust-toolchain:
-              - beta
-              - nightly
 
     runs-on: ${{ matrix.os }}
 
