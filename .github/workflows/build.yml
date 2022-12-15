@@ -7,26 +7,33 @@ on:
   pull_request:
 
 jobs:
+  matrix:
+    runs-on: ubuntu-latest
+
+    outputs:
+      matrix: ${{ steps.generate-build-matrix.outputs.matrix }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Generate build matrix
+        id: generate-build-matrix
+        run: |
+          MATRIX=$(python .github/generate_build_matrix.py)
+          echo $MATRIX | jq
+          echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
+
   build:
+    needs: generate-matrix
+
     strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
-        python-version:
-          - "3.7"
-          - "3.8"
-          - "3.9"
-          - "3.10"
-        rust-toolchain: ["stable"]
-        include:
-          - os: ubuntu-latest
-            python-version: "3.10"
-            rust-toolchain: beta
-          - os: ubuntu-latest
-            python-version: "3.10"
-            rust-toolchain: nightly
+      matrix: ${{fromJson(needs.matrix.outputs.matrix)}}
 
     runs-on: ${{ matrix.os }}
 
