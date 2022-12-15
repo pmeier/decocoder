@@ -50,5 +50,4 @@ jobs:
       - name: Upload wheel
         uses: actions/upload-artifact@v3
         with:
-          name: wheel--python-${{ matrix.python-version}}--rust-${{ matrix.rust-toolchain }}
           path: target/wheels/*.whl
