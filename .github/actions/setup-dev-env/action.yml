@@ -15,6 +15,12 @@ runs:
   using: composite
 
   steps:
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: ${{ inputs.rust-toolchain }}
+        default: true
+
     - name: Setup mambaforge
       uses: conda-incubator/setup-miniconda@v2
       with:
@@ -39,14 +45,10 @@ runs:
         restore-keys: |
           ${{ runner.os }}--${{ runner.arch }}--${{ inputs.python-version }}
 
-    - name: Update conda environment
+    - name: Update conda environment if necessary
       if: steps.cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        sed 's/\python=[0-9.]\+/python=${{ inputs.python-version }}/g'
+        sed 's/python=[0-9.]\+/python=${{ inputs.python-version }}/g' -i environment.yml
+        sed 's/- rust=[0-9.]\+//g' -i environment.yml
         mamba env update -n decocoder-dev -f environment.yml
-
-    - name: Update Rust toolchain
-      if: matrix.rust-toolchain != 'stable'
-      shell: bash
-      run: rustup toolchain install ${{ inputs.rust-toolchain }}

@@ -32,28 +32,11 @@ jobs:
       - name: Temp disable
         run: exit 1
 
-  debug:
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            image: quay.io/pypa/manylinux2014_x86_64
-          - os: ubuntu-latest
-            image: quay.io/pypa/manylinux_2_28_x86_64
-          - os: windows-latest
-
-    runs-on: ${{ matrix.os }}
-    container:
-      image: ${{ matrix.image }}
-
-    steps:
-      - run: python --version
-
   build:
     needs: matrix
 
     strategy:
-      matrix: ${{fromJson(needs.matrix.outputs.matrix)}}
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
 
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container }}
@@ -78,6 +61,6 @@ jobs:
       - name: Upload wheel
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.os }}--${{ matrix.python-version }}--${{ matrix.rust-toolchain }}
+          name: wheels-${{ matrix.rust-toolchain }}
           path: target/wheels/*.whl
           if-no-files-found: error

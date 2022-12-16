@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.7
-  - rust
+  - rust=1.66
   - maturin
 
   - ufmt
