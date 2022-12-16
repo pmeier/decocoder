@@ -22,6 +22,7 @@ MANYLINUX_CONTAINERS = [
 class BuildConfig:
     os: str = "ubuntu-latest"
     container: str = ""
+    # TODO: pull this out of environment.yml
     rust_toolchain: str = "stable"
 
     def __post_init__(self):
