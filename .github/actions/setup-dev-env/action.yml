@@ -49,6 +49,6 @@ runs:
       shell: bash
       run: |
         ls -la || true
-        sed 's/python=[0-9.]\+/python=${{ inputs.python-version }}/g' -i environment.yml
-        sed 's/- rust=[0-9.]\+//g' -i environment.yml
+        sed -i'' 's/python=[0-9.]\+/python=${{ inputs.python-version }}/g' environment.yml
+        sed -i'' 's/- rust=[0-9.]\+//g' environment.yml
         mamba env update -n decocoder-dev -f environment.yml
