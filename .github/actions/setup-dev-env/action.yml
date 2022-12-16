@@ -31,10 +31,9 @@ runs:
         echo "DATE=$DATE" >> $GITHUB_OUTPUT
 
     - name: Restore conda environment
-      id: cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
-        path: ${{ env.CONDA }}/envs
+        path: ${{ env.CONDA }}/envs/${{ inputs.name }}
         key: ${{ runner.os }}--${{ runner.arch }}--${{steps.cache-key.outputs.date }}--${{ hashFiles(inputs.path) }}
         restore-keys: |
           ${{ runner.os }}--${{ runner.arch }}--
