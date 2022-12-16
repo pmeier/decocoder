@@ -37,8 +37,7 @@ runs:
         echo "DATE=$DATE" >> $GITHUB_OUTPUT
 
     - name: Restore conda environment
-      id: cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ env.CONDA }}/envs
         key: ${{ runner.os }}--${{ runner.arch }}--${{ inputs.python-version }}--${{steps.cache-key.outputs.date }}--${{ hashFiles('environment.yml', 'pyproject.toml', 'Cargo.toml') }}
