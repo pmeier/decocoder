@@ -30,7 +30,7 @@ class BuildConfig:
             self.container = MANYLINUX_CONTAINERS[0]
 
     def to_dict(self):
-        return {key: str(value).replace("_", "-") for key, value in self.__dict__}
+        return {key.replace("_", "-"): value for key, value in self.__dict__.items()}
 
 
 def build_configs():
