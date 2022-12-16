@@ -25,7 +25,7 @@ jobs:
       - name: Generate build matrix
         id: generate-build-matrix
         run: |
-          MATRIX=$(python .github/generate_build_matrix.py)
+          MATRIX=$(python .github/generate_matrix.py)
           echo $MATRIX | jq
           echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
 
