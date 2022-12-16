@@ -29,9 +29,6 @@ jobs:
           echo $MATRIX | jq
           echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
 
-      - name: Temp disable
-        run: exit 1
-
   build:
     needs: matrix
 
