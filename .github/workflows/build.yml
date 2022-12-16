@@ -58,6 +58,6 @@ jobs:
       - name: Upload wheel
         uses: actions/upload-artifact@v3
         with:
-          name: wheels-${{ matrix.rust-toolchain }}
+          name: wheels-rust-${{ matrix.rust-toolchain }}
           path: target/wheels/*.whl
           if-no-files-found: error
