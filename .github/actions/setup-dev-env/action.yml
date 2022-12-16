@@ -40,7 +40,7 @@ runs:
       uses: actions/cache@v3
       with:
         path: ${{ env.CONDA }}/envs
-        key: ${{ runner.os }}--${{ runner.arch }}--${{ inputs.python-version }}--${{steps.cache-key.outputs.date }}--${{ hashFiles('environment.yml', 'pyproject.toml', 'Cargo.toml') }}
+        key: ${{ runner.os }}-${{ runner.arch }}--${{ inputs.python-version }}--${{steps.cache-key.outputs.date }}--${{ hashFiles('environment.yml', 'pyproject.toml', 'Cargo.toml') }}
         restore-keys: |
           ${{ runner.os }}--${{ runner.arch }}--${{ inputs.python-version }}
 
@@ -48,7 +48,6 @@ runs:
       if: steps.cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        ls -la || true
-        sed -i'' 's/python=[0-9.]\+/python=${{ inputs.python-version }}/g' environment.yml
-        sed -i'' 's/- rust=[0-9.]\+//g' environment.yml
+        sed -i'' -e 's/python=[0-9.]\+/python=${{ inputs.python-version }}/g' environment.yml
+        sed -i'' -e 's/- rust=[0-9.]\+//g' environment.yml
         mamba env update -n decocoder-dev -f environment.yml
