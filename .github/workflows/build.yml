@@ -1,0 +1,64 @@
+name: build.yml
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+
+    outputs:
+      matrix: ${{ steps.generate-build-matrix.outputs.matrix }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.7"
+
+      - name: Generate build matrix
+        id: generate-build-matrix
+        run: |
+          MATRIX=$(python .github/generate_matrix.py)
+          echo $MATRIX | jq
+          echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
+
+  build:
+    needs: matrix
+
+    strategy:
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
+      fail-fast: false
+
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup development environment
+        uses: ./.github/actions/setup-dev-env
+        with:
+          python-version: ${{ matrix.python-version }}
+          rust-toolchain: ${{ matrix.rust-toolchain }}
+
+      - name: Build wheel
+        run: maturin build --all-features
+
+      - name: Upload wheel
+        uses: actions/upload-artifact@v3
+        with:
+          name: wheels-rust-${{ matrix.rust-toolchain }}
+          path: target/wheels/*.whl
+          if-no-files-found: error
