@@ -5,11 +5,11 @@ edition = "2021"
 
 [lib]
 name = "_rs"
-path = "src/rust/lib.rs"
+path = "src/decocoder-rs/lib.rs"
 crate-type = ["cdylib"]
 
 [package.metadata.maturin]
-python-source = "src/python"
+python-source = "src"
 name = "decocoder._rs"
 
 [dependencies]
