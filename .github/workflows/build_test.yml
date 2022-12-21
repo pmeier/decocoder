@@ -78,9 +78,6 @@ jobs:
 
       - name: Setup development environment
         uses: ./.github/actions/setup-dev-env
-        with:
-          python-version: ${{ matrix.python-version }}
-          rust-toolchain: ${{ matrix.rust-toolchain }}
 
       - name: Download wheels
         uses: actions/download-artifact@v3
