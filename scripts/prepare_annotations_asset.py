@@ -3,6 +3,7 @@ import pathlib
 import re
 import zipfile
 from urllib.parse import urlsplit
+from collections import defaultdict
 
 import requests
 import tqdm
@@ -23,9 +24,7 @@ def main(url, *, root):
 
             print(f"Load annotations from {file_name}")
             with zip_file.open(zip_info) as json_file:
-                per_file_annotations = extract_relevant_data(json.load(json_file))
-
-            annotations[file_name] = per_file_annotations
+                annotations.update(aggregate(json.load(json_file)))
 
     output_file = path.with_suffix(".json")
     print(f"Save annotations to {output_file}")
@@ -59,21 +58,19 @@ def download(url, root=".", *, name=None, chunk_size=32 * 1024):
     return path
 
 
-def extract_relevant_data(raw_data):
+def aggregate(raw_data):
     spatial_sizes = {
         meta["id"]: (meta["height"], meta["width"]) for meta in raw_data["images"]
     }
-    return {
-        annotation["id"]: (
-            annotation["segmentation"],
-            spatial_sizes[annotation["image_id"]],
+    annotations = defaultdict(dict)
+    for raw_annotation in raw_data["annotations"]:
+        image_id = raw_annotation["image_id"]
+        annotation_id = raw_annotation["id"]
+        annotations[f"{image_id:012d}"][f"{annotation_id:012d}"] = (
+            raw_annotation["segmentation"],
+            spatial_sizes[image_id],
         )
-        for annotation in raw_data["annotations"]
-    }
-
-
-class JSONEncoderWithProgressBar(json.JSONEncoder):
-    pass
+    return dict(annotations)
 
 
 if __name__ == "__main__":
