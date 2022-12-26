@@ -1,4 +1,4 @@
-name: build.yml
+name: build_test.yml
 
 on:
   push:
