@@ -2,8 +2,8 @@ import json
 import pathlib
 import re
 import zipfile
-from urllib.parse import urlsplit
 from collections import defaultdict
+from urllib.parse import urlsplit
 
 import requests
 import tqdm

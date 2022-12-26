@@ -4,6 +4,7 @@ import pathlib
 import sys
 
 import tqdm
+
 import decocoder
 
 PROJECT_ROOT = pathlib.Path(__file__).parents[1]
