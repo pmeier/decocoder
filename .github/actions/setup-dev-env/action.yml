@@ -15,10 +15,6 @@ runs:
   using: composite
 
   steps:
-    - name: Log inputs
-      shell: bash
-      run: echo ${{ fromJson(inputs) }} | jq
-
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
       with:
