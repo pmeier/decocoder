@@ -4,7 +4,6 @@ import pathlib
 import sys
 
 import tqdm
-import pprint
 import decocoder
 
 PROJECT_ROOT = pathlib.Path(__file__).parents[1]
@@ -18,7 +17,7 @@ def main(args):
             raise AssertionError(
                 f"decocoder.segmentation_to_mask(segmentation, spatial_size) "
                 f"failed for the following inputs:\n\n"
-                f"segmentation: {pprint.pformat(segmentation)}\n"
+                f"segmentation: {segmentation}\n"
                 f"spatial_size: {spatial_size}\n"
             ) from error
 
