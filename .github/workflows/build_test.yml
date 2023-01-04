@@ -1,4 +1,4 @@
-name: build.yml
+name: build_test.yml
 
 on:
   push:
@@ -62,3 +62,47 @@ jobs:
           name: wheels-rust-${{ matrix.rust-toolchain }}
           path: target/wheels/*.whl
           if-no-files-found: error
+
+  smoke-test:
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup development environment
+        uses: ./.github/actions/setup-dev-env
+
+      - name: Download wheels
+        uses: actions/download-artifact@v3
+        with:
+          name: wheels-rust-stable
+          path: wheels.zip
+
+      - name: Debug
+        run: ls -la
+
+      - name: Install decocoder
+        run: |
+          unzip wheels.zip
+          pip install decocoder*-manylinux_2_28*.whl
+
+      - name: Restore assets
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: assets
+          key: ${{ hashFiles('prepare_annotations_asset.py') }}
+
+      - name: Prepare assets if necessary
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: python scripts/prepare_annotations_asset.py
+
+      - name: Run smoke tests
+        run: python scripts/smoke_test.py

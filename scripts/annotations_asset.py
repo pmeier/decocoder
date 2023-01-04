@@ -2,6 +2,7 @@ import json
 import pathlib
 import re
 import zipfile
+from collections import defaultdict
 from urllib.parse import urlsplit
 
 import requests
@@ -23,9 +24,7 @@ def main(url, *, root):
 
             print(f"Load annotations from {file_name}")
             with zip_file.open(zip_info) as json_file:
-                per_file_annotations = extract_relevant_data(json.load(json_file))
-
-            annotations[file_name] = per_file_annotations
+                annotations.update(aggregate(json.load(json_file)))
 
     output_file = path.with_suffix(".json")
     print(f"Save annotations to {output_file}")
@@ -59,21 +58,39 @@ def download(url, root=".", *, name=None, chunk_size=32 * 1024):
     return path
 
 
-def extract_relevant_data(raw_data):
+def aggregate(raw_data):
     spatial_sizes = {
         meta["id"]: (meta["height"], meta["width"]) for meta in raw_data["images"]
     }
-    return {
-        annotation["id"]: (
-            annotation["segmentation"],
-            spatial_sizes[annotation["image_id"]],
+    annotations = defaultdict(dict)
+    for raw_annotation in raw_data["annotations"]:
+        image_id = raw_annotation["image_id"]
+        annotation_id = raw_annotation["id"]
+        annotations[f"{image_id:012d}"][f"{annotation_id:012d}"] = (
+            raw_annotation["segmentation"],
+            spatial_sizes[image_id],
         )
-        for annotation in raw_data["annotations"]
-    }
+    return dict(annotations)
 
 
-class JSONEncoderWithProgressBar(json.JSONEncoder):
-    pass
+def load(path):
+    print(f"Loading annotations from {path}")
+    with open(path) as file:
+        annotations = json.load(file)
+    with tqdm.tqdm(
+        total=sum(len(image_annotations) for image_annotations in annotations.values())
+    ) as progress_bar:
+        for image_id, image_annotations in annotations.items():
+            for annotation_id, annotation in image_annotations.items():
+                progress_bar.desc = (
+                    f"image_id={image_id} / annotation_id={annotation_id}"
+                )
+                progress_bar.display()
+
+                try:
+                    yield annotation
+                finally:
+                    progress_bar.update()
 
 
 if __name__ == "__main__":
