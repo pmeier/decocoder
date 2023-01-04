@@ -8,6 +8,7 @@ pub struct Vertex {
 
 impl Vertex {
     pub fn from_adjacent_coordinates(adjacent_coordinates: &[f32]) -> Vertex {
+        debug_assert!(adjacent_coordinates.len() == 2);
         Vertex {
             x: adjacent_coordinates[0],
             y: adjacent_coordinates[1],
@@ -27,6 +28,7 @@ pub fn fill(mask: &mut PyReadwriteArray2<u8>, vertices: &[Vec<Vertex>]) {
 
     // Having fewer than two edges cannot be a valid polygon. There are cases like this
     // in the official COCO data. For example, the annotation with ID 000000000918.
+    // TODO: investigate if drawing nothing is ok in that case
     if edges.len() < 2 {
         return;
     }
@@ -48,10 +50,10 @@ impl Edge {
         let vertex_0 = &adjacent_vertices[0];
         let vertex_1 = &adjacent_vertices[1];
 
-        let x_0;
-        let y_0;
-        let x_1;
-        let y_1;
+        let x_0: f32;
+        let y_0: f32;
+        let x_1: f32;
+        let y_1: f32;
         if vertex_0.y < vertex_1.y {
             x_0 = vertex_0.x;
             y_0 = vertex_0.y;
@@ -91,36 +93,29 @@ fn fill_with_scanline(
     mask: &mut PyReadwriteArray2<u8>,
     edges: &[Edge],
     y_scan: usize,
-    spatial_size: &(usize, usize),
+    x_max: usize,
 ) {
     debug_assert!(edges.len() % 2 == 0);
+
     for adjacent_edges in edges.chunks(2) {
-        // TODO: Bresenham!
         let x_start = adjacent_edges[0].x_val as usize;
-        let mut x_end = adjacent_edges[1].x_val.ceil() as usize;
-        if x_start == x_end {
-            x_end += 1;
-        }
-        x_end = x_end.clamp(0, spatial_size.1);
-        for x in x_start..x_end {
-            *mask.get_mut((y_scan, x)).unwrap_or_else(|| {
-                panic!("Index ({y_scan}, {x}) out of bounds for mask of shape {spatial_size:?}")
-            }) = 255;
+        let x_end = (adjacent_edges[1].x_val as usize).clamp(0, x_max);
+
+        if x_start > x_end {
+            *mask.get_mut((y_scan, x_end)).unwrap() = 1;
+        } else {
+            for x in x_start..=x_end {
+                *mask.get_mut((y_scan, x)).unwrap() = 1;
+            }
         }
     }
-}
-
-fn get_spatial_size(mask: &mut PyReadwriteArray2<u8>) -> (usize, usize) {
-    let shape = mask.shape();
-    (shape[0], shape[1])
 }
 
 // https://www.cs.rit.edu/~icss571/filling/
 fn fill_with_scanlines(mask: &mut PyReadwriteArray2<u8>, edges: Vec<Edge>) {
     let shape = mask.shape();
     let y_max = shape[0] - 1;
-
-    let spatial_size = get_spatial_size(mask);
+    let x_max = shape[1] - 1;
 
     let mut inactive_edges = edges;
     inactive_edges.sort_by_key(|edge| (edge.y_min, edge.x_val as usize, edge.inv_slope != 0.0));
@@ -134,11 +129,10 @@ fn fill_with_scanlines(mask: &mut PyReadwriteArray2<u8>, edges: Vec<Edge>) {
 
     let mut prev_processed_edges: Vec<Edge> = Vec::new();
 
-    while !active_edges.is_empty() && y_scan <= y_max {
-        fill_with_scanline(mask, &active_edges, y_scan, &spatial_size);
+    while !active_edges.is_empty() {
+        fill_with_scanline(mask, &active_edges, y_scan, x_max);
 
         y_scan += 1;
-
         for edge in &mut active_edges {
             edge.update_x_val();
         }
@@ -156,7 +150,7 @@ fn fill_with_scanlines(mask: &mut PyReadwriteArray2<u8>, edges: Vec<Edge>) {
     }
 
     if y_scan < y_max {
-        fill_with_scanline(mask, &prev_processed_edges, y_scan, &spatial_size);
+        fill_with_scanline(mask, &prev_processed_edges, y_scan, x_max);
     }
 }
 
