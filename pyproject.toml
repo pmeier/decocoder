@@ -6,7 +6,7 @@ requires = [
 
 [project]
 name = "decocoder"
-dynamic =["version"]
+dynamic = ["version"]
 requires-python = ">=3.7"
 classifiers = [
     "Programming Language :: Rust",
@@ -17,7 +17,20 @@ dependencies = [
   "importlib_metadata ; python_version < '3.8'",
 ]
 
+[tool.usort]
+categories = [
+    "future",
+    "standard_library",
+    "third_party_utils",
+    "third_party",
+    "first_party",
+]
+
 [tool.usort.known]
+third_party_utils = [
+    "hypothesis",
+    "pytest",
+]
 first_party = [
     "decocoder",
 ]
