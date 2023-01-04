@@ -46,7 +46,7 @@ def _decode_rle(mask: np.ndarray, counts: List[int]) -> None:
     for i, count in enumerate(counts):
         if i % 2 == 1:
             for idx in range(offset, offset + count):
-                mask[np.unravel_index(idx, mask.shape, order="F")] = 255
+                mask[np.unravel_index(idx, mask.shape, order="F")] = 1
         offset += count
 
 

@@ -10,7 +10,7 @@ pub fn fill(a: &mut PyReadwriteArray2<u8>, counts: &[usize]) {
     for (i, count) in counts.iter().enumerate() {
         if i % 2 == 1 {
             for idx in (offset..offset + count).map(cmi_to_rmi) {
-                data[idx] = 255;
+                data[idx] = 1;
             }
         }
         offset += count;

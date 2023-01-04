@@ -102,10 +102,10 @@ fn fill_with_scanline(
         let x_end = (adjacent_edges[1].x_val as usize).clamp(0, x_max);
 
         if x_start > x_end {
-            *mask.get_mut((y_scan, x_end)).unwrap() = 255;
+            *mask.get_mut((y_scan, x_end)).unwrap() = 1;
         } else {
             for x in x_start..=x_end {
-                *mask.get_mut((y_scan, x)).unwrap() = 255;
+                *mask.get_mut((y_scan, x)).unwrap() = 1;
             }
         }
     }
