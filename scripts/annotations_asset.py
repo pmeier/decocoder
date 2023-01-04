@@ -73,6 +73,26 @@ def aggregate(raw_data):
     return dict(annotations)
 
 
+def load(path):
+    print(f"Loading annotations from {path}")
+    with open(path) as file:
+        annotations = json.load(file)
+    with tqdm.tqdm(
+        total=sum(len(image_annotations) for image_annotations in annotations.values())
+    ) as progress_bar:
+        for image_id, image_annotations in annotations.items():
+            for annotation_id, annotation in image_annotations.items():
+                progress_bar.desc = (
+                    f"image_id={image_id} / annotation_id={annotation_id}"
+                )
+                progress_bar.display()
+
+                try:
+                    yield annotation
+                finally:
+                    progress_bar.update()
+
+
 if __name__ == "__main__":
     main(
         "http://images.cocodataset.org/annotations/annotations_trainval2017.zip",
