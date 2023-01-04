@@ -28,7 +28,7 @@ def main(args):
                 except BaseException as error:
                     raise AssertionError(
                         f"The error above was caused by "
-                        f"the annotation with ID {annotation_id} in file {file_name}."
+                        f"the annotation with ID {annotation_id} of image {file_name}."
                     ) from error
 
             progress_bar.update()
