@@ -12,11 +12,11 @@ def segmentation_to_mask(
     if isinstance(segmentation, dict):
         counts: List[int] = segmentation["counts"]
         size = cast(Tuple[int, int], tuple(segmentation["size"]))
+        spatial_size = tuple(spatial_size)
 
         if spatial_size is None:
             spatial_size = size
         elif size != spatial_size:
-            spatial_size = tuple(spatial_size)
             raise ValueError(
                 f"implicit and explicit size mismatch: {size} != {spatial_size}",
             )
