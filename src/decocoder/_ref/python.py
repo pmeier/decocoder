@@ -41,21 +41,21 @@ def rle_to_mask(counts: List[int], spatial_size: Tuple[int, int]) -> np.ndarray:
     return mask
 
 
+def _decode_rle(mask: np.ndarray, counts: List[int]) -> None:
+    offset = 0
+    for i, count in enumerate(counts):
+        if i % 2 == 1:
+            for idx in range(offset, offset + count):
+                mask[np.unravel_index(idx, mask.shape, order="F")] = 255
+        offset += count
+
+
 def polygons_to_mask(
     polygons: List[List[float]], spatial_size: Tuple[int, int]
 ) -> np.ndarray:
     mask = np.zeros(spatial_size, dtype=np.uint8)
     _decode_polygons(mask, polygons)
     return mask
-
-
-def _decode_rle(mask: np.ndarray, counts: List[int]) -> None:
-    offset = 0
-    for i, count in enumerate(counts):
-        if i % 2 == 1:
-            for idx in np.unravel_index(range(offset, offset + count), mask.shape):
-                mask[idx] = 255
-        offset += count
 
 
 def _decode_polygons(mask: np.ndarray, polygons: List[List[float]]) -> None:
